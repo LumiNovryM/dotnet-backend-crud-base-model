@@ -1,4 +1,4 @@
-﻿namespace dotnet_backend_crud_base_model.Common;
+﻿namespace dotnet_backend_crud_base_model.Requests.Employee;
 
 public class EmployeeQueryParameters
 {

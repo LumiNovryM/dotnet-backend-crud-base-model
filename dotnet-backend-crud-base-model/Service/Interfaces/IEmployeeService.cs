@@ -1,4 +1,5 @@
 ﻿using dotnet_backend_crud_base_model.Common;
+using dotnet_backend_crud_base_model.Requests.Employee;
 using dotnet_backend_crud_base_model.Models.Entities;
 
 namespace dotnet_backend_crud_base_model.Services.Interfaces;
