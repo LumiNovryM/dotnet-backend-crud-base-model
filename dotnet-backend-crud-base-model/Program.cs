@@ -2,24 +2,44 @@ using dotnet_backend_crud_base_model.Data;
 using dotnet_backend_crud_base_model.Data.Seed;
 using dotnet_backend_crud_base_model.Repositories.Implementations;
 using dotnet_backend_crud_base_model.Repositories.Interfaces;
+using dotnet_backend_crud_base_model.Services.Implementations;
+using dotnet_backend_crud_base_model.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+// Dependency Injection
+builder.Services.AddScoped<
+    IEmployeeRepository,
+    EmployeeRepository>();
+
+builder.Services.AddScoped<
+    IEmployeeService,
+    EmployeeService>();
+
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
 
 var app = builder.Build();
 
+
+// Seeder
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider
@@ -35,6 +55,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

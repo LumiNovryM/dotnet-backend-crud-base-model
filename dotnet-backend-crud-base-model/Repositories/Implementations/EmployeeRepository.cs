@@ -17,11 +17,7 @@ public class EmployeeRepository : IEmployeeRepository
 
 
     public async Task<PagedResult<Employee>> GetAllAsync(
-        int page,
-        int pageSize,
-        string? search,
-        string? sortBy,
-        string? sortDirection)
+    EmployeeQueryParameters parameters)
     {
         var query = _context.Employees
             .Include(x => x.JobTitle)
@@ -29,15 +25,15 @@ public class EmployeeRepository : IEmployeeRepository
             .AsQueryable();
 
 
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(parameters.Search))
         {
             query = query.Where(x =>
-                x.Nik!.Contains(search) ||
-                x.FirstName!.Contains(search) ||
-                x.LastName!.Contains(search) ||
-                x.Email!.Contains(search) ||
-                x.JobTitle!.JobTitleName!.Contains(search) ||
-                x.JobTitle.Department!.DepartmentName!.Contains(search)
+                x.Nik!.Contains(parameters.Search) ||
+                x.FirstName!.Contains(parameters.Search) ||
+                x.LastName!.Contains(parameters.Search) ||
+                x.Email!.Contains(parameters.Search) ||
+                x.JobTitle!.JobTitleName!.Contains(parameters.Search) ||
+                x.JobTitle.Department!.DepartmentName!.Contains(parameters.Search)
             );
         }
 
@@ -45,38 +41,38 @@ public class EmployeeRepository : IEmployeeRepository
         var totalRecords = await query.CountAsync();
 
 
-        query = sortBy?.ToLower() switch
+        query = parameters.SortBy?.ToLower() switch
         {
-            "firstname" => sortDirection == "desc"
+            "firstname" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(x => x.FirstName)
                 : query.OrderBy(x => x.FirstName),
 
 
-            "lastname" => sortDirection == "desc"
+            "lastname" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(x => x.LastName)
                 : query.OrderBy(x => x.LastName),
 
 
-            "email" => sortDirection == "desc"
+            "email" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(x => x.Email)
                 : query.OrderBy(x => x.Email),
 
 
-            "department" => sortDirection == "desc"
+            "department" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(
                     x => x.JobTitle!.Department!.DepartmentName)
                 : query.OrderBy(
                     x => x.JobTitle!.Department!.DepartmentName),
 
 
-            "jobtitle" => sortDirection == "desc"
+            "jobtitle" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(
                     x => x.JobTitle!.JobTitleName)
                 : query.OrderBy(
                     x => x.JobTitle!.JobTitleName),
 
 
-            "hiredate" => sortDirection == "desc"
+            "hiredate" => parameters.SortDirection == "desc"
                 ? query.OrderByDescending(x => x.HireDate)
                 : query.OrderBy(x => x.HireDate),
 
@@ -84,18 +80,29 @@ public class EmployeeRepository : IEmployeeRepository
             _ => query.OrderBy(x => x.Id)
         };
 
+        if (parameters.DepartmentId.HasValue)
+        {
+            query = query.Where(x =>
+                x.JobTitle!.DepartmentId == parameters.DepartmentId);
+        }
+
+        if (parameters.JobTitleId.HasValue)
+        {
+            query = query.Where(x =>
+                x.JobTitleId == parameters.JobTitleId);
+        }
 
         var data = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((parameters.Page - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
             .ToListAsync();
 
 
         return new PagedResult<Employee>
         {
             Data = data,
-            Page = page,
-            PageSize = pageSize,
+            Page = parameters.Page,
+            PageSize = parameters.PageSize,
             TotalRecords = totalRecords
         };
     }
@@ -121,16 +128,18 @@ public class EmployeeRepository : IEmployeeRepository
 
 
 
-    public void Update(Employee employee)
+    public async Task UpdateAsync(Employee employee)
     {
         _context.Employees.Update(employee);
+
+        await _context.SaveChangesAsync();
     }
 
-
-
-    public void Delete(Employee employee)
+    public async Task DeleteAsync(Employee employee)
     {
         _context.Employees.Remove(employee);
+
+        await _context.SaveChangesAsync();
     }
 
 
