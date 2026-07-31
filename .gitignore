@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# appsettingsDevelopmentJson
+./dotnet-backend-crud-base-model/appsettings.Development.json
