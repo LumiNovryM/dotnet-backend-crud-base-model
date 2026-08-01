@@ -17,10 +17,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-
-// Add services to the container.
-builder.Services.AddControllers();
-
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // Dependency Injection
@@ -31,6 +27,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IEmployeeService,
     EmployeeService>();
+
+// Add services to the container.
+builder.Services.AddControllers();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
