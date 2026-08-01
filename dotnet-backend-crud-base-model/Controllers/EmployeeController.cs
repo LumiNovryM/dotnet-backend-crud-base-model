@@ -1,4 +1,6 @@
-﻿using dotnet_backend_crud_base_model.Requests.Employee;
+﻿using dotnet_backend_crud_base_model.Common;
+using dotnet_backend_crud_base_model.DTOs.Employee;
+using dotnet_backend_crud_base_model.Requests.Employee;
 using dotnet_backend_crud_base_model.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +23,12 @@ public class EmployeeController : ControllerBase
     {
         var result = await _employeeService.GetAllAsync(query);
 
-        return Ok(result);
+        return Ok(new ApiResponse<PagedResult<EmployeeResponseDto>>
+        {
+            Success = true,
+            Message = "Employees retrieved successfully.",
+            Data = result
+        });
     }
 
     [HttpGet("{id:long}")]
@@ -31,9 +38,19 @@ public class EmployeeController : ControllerBase
 
         if (employee is null)
         {
-            return NotFound();
+            return NotFound(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Employee not found.",
+                Data = null
+            });
         }
 
-        return Ok(employee);
+        return Ok(new ApiResponse<EmployeeResponseDto>
+        {
+            Success = true,
+            Message = "Employee retrieved successfully.",
+            Data = employee
+        });
     }
 }
