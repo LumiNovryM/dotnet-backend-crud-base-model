@@ -53,4 +53,21 @@ public class EmployeeController : ControllerBase
             Data = employee
         });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(
+    [FromBody] EmployeeCreateDto dto)
+    {
+        var employee = await _employeeService.CreateAsync(dto);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = employee.Id },
+            new ApiResponse<EmployeeResponseDto>
+            {
+                Success = true,
+                Message = "Employee created successfully.",
+                Data = employee
+            });
+    }
 }
