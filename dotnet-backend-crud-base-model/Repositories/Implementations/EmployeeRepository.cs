@@ -38,10 +38,6 @@ public class EmployeeRepository : IEmployeeRepository
             );
         }
 
-
-        var totalRecords = await query.CountAsync();
-
-
         query = parameters.SortBy?.ToLower() switch
         {
             "firstname" => parameters.SortDirection == "desc"
@@ -92,6 +88,8 @@ public class EmployeeRepository : IEmployeeRepository
             query = query.Where(x =>
                 x.JobTitleId == parameters.JobTitleId);
         }
+
+        var totalRecords = await query.CountAsync();
 
         var data = await query
             .Skip((parameters.Page - 1) * parameters.PageSize)
