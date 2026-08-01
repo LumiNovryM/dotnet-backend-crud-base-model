@@ -57,7 +57,9 @@ public class EmployeeService : IEmployeeService
 
         await _repository.AddAsync(employee);
 
-        return _mapper.Map<EmployeeResponseDto>(employee);
+        employee = await _repository.GetByIdAsync(employee.Id);
+
+        return _mapper.Map<EmployeeResponseDto>(employee!);
     }
 
 
