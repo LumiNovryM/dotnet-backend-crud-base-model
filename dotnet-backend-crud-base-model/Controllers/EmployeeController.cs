@@ -70,4 +70,29 @@ public class EmployeeController : ControllerBase
                 Data = employee
             });
     }
+
+    [HttpPut("{id:long}")]
+    public async Task<IActionResult> Update(
+    long id,
+    [FromBody] EmployeeUpdateDto dto)
+    {
+        var employee = await _employeeService.UpdateAsync(id, dto);
+
+        if (employee is null)
+        {
+            return NotFound(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Employee not found.",
+                Data = null
+            });
+        }
+
+        return Ok(new ApiResponse<EmployeeResponseDto>
+        {
+            Success = true,
+            Message = "Employee updated successfully.",
+            Data = employee
+        });
+    }
 }

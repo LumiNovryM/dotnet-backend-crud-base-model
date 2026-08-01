@@ -65,8 +65,8 @@ public class EmployeeService : IEmployeeService
 
 
     public async Task<EmployeeResponseDto?> UpdateAsync(
-        long id,
-        EmployeeUpdateDto dto)
+    long id,
+    EmployeeUpdateDto dto)
     {
         var employee = await _repository.GetByIdAsync(id);
 
@@ -76,6 +76,8 @@ public class EmployeeService : IEmployeeService
         _mapper.Map(dto, employee);
 
         await _repository.UpdateAsync(employee);
+
+        employee = await _repository.GetByIdAsync(id);
 
         return _mapper.Map<EmployeeResponseDto>(employee);
     }
