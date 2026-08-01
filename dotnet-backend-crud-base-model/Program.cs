@@ -4,6 +4,7 @@ using dotnet_backend_crud_base_model.Repositories.Implementations;
 using dotnet_backend_crud_base_model.Repositories.Interfaces;
 using dotnet_backend_crud_base_model.Services.Implementations;
 using dotnet_backend_crud_base_model.Services.Interfaces;
+using dotnet_backend_crud_base_model.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // Dependency Injection
 builder.Services.AddScoped<
@@ -29,7 +31,6 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IEmployeeService,
     EmployeeService>();
-
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

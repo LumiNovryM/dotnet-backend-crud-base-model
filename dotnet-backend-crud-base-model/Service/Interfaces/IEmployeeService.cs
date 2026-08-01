@@ -1,19 +1,18 @@
 ﻿using dotnet_backend_crud_base_model.Common;
+using dotnet_backend_crud_base_model.DTOs.Employee;
 using dotnet_backend_crud_base_model.Requests.Employee;
-using dotnet_backend_crud_base_model.Models.Entities;
 
 namespace dotnet_backend_crud_base_model.Services.Interfaces;
 
 public interface IEmployeeService
 {
-    Task<PagedResult<Employee>> GetAllAsync(
-    EmployeeQueryParameters parameters);
+    Task<PagedResult<EmployeeResponseDto>> GetAllAsync(EmployeeQueryParameters query);
 
-    Task<Employee?> GetByIdAsync(long id);
+    Task<EmployeeResponseDto?> GetByIdAsync(long id);
 
-    Task CreateAsync(Employee employee);
+    Task<EmployeeResponseDto> CreateAsync(EmployeeCreateDto dto);
 
-    Task UpdateAsync(Employee employee);
+    Task<EmployeeResponseDto?> UpdateAsync(long id, EmployeeUpdateDto dto);
 
-    Task DeleteAsync(long id);
+    Task<bool> DeleteAsync(long id);
 }

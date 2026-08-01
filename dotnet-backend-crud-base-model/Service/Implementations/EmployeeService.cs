@@ -1,65 +1,94 @@
-﻿using dotnet_backend_crud_base_model.Common;
-using dotnet_backend_crud_base_model.Requests.Employee;
+﻿using AutoMapper;
+using dotnet_backend_crud_base_model.Common;
+using dotnet_backend_crud_base_model.DTOs.Employee;
 using dotnet_backend_crud_base_model.Models.Entities;
 using dotnet_backend_crud_base_model.Repositories.Interfaces;
+using dotnet_backend_crud_base_model.Requests.Employee;
 using dotnet_backend_crud_base_model.Services.Interfaces;
 
 namespace dotnet_backend_crud_base_model.Services.Implementations;
 
 public class EmployeeService : IEmployeeService
 {
-    private readonly IEmployeeRepository _employeeRepository;
+    private readonly IEmployeeRepository _repository;
+    private readonly IMapper _mapper;
 
 
     public EmployeeService(
-        IEmployeeRepository employeeRepository)
+    IEmployeeRepository repository,
+    IMapper mapper)
     {
-        _employeeRepository = employeeRepository;
+        _repository = repository;
+        _mapper = mapper;
     }
 
 
 
-    public async Task<PagedResult<Employee>> GetAllAsync(
-     EmployeeQueryParameters parameters)
+    public async Task<PagedResult<EmployeeResponseDto>> GetAllAsync(EmployeeQueryParameters query)
     {
-        return await _employeeRepository.GetAllAsync(parameters);
+        var result = await _repository.GetAllAsync(query);
+
+        return new PagedResult<EmployeeResponseDto>
+        {
+            Data = _mapper.Map<List<EmployeeResponseDto>>(result.Data),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalRecords = result.TotalRecords
+        };
     }
 
 
 
-    public async Task<Employee?> GetByIdAsync(long id)
+    public async Task<EmployeeResponseDto?> GetByIdAsync(long id)
     {
-        return await _employeeRepository.GetByIdAsync(id);
+        var employee = await _repository.GetByIdAsync(id);
+
+        if (employee is null)
+            return null;
+
+        return _mapper.Map<EmployeeResponseDto>(employee);
     }
 
 
 
-    public async Task CreateAsync(Employee employee)
+    public async Task<EmployeeResponseDto> CreateAsync(EmployeeCreateDto dto)
     {
-        await _employeeRepository.AddAsync(employee);
+        var employee = _mapper.Map<Employee>(dto);
+
+        await _repository.AddAsync(employee);
+
+        return _mapper.Map<EmployeeResponseDto>(employee);
     }
 
 
 
-    public async Task UpdateAsync(Employee employee)
+    public async Task<EmployeeResponseDto?> UpdateAsync(
+        long id,
+        EmployeeUpdateDto dto)
     {
-        await _employeeRepository.UpdateAsync(employee);
-    }
-
-
-
-    public async Task DeleteAsync(long id)
-    {
-        var employee = await _employeeRepository.GetByIdAsync(id);
+        var employee = await _repository.GetByIdAsync(id);
 
         if (employee == null)
-        {
-            throw new KeyNotFoundException(
-                "Employee not found"
-            );
-        }
+            return null;
+
+        _mapper.Map(dto, employee);
+
+        await _repository.UpdateAsync(employee);
+
+        return _mapper.Map<EmployeeResponseDto>(employee);
+    }
 
 
-        await _employeeRepository.DeleteAsync(employee);
+
+    public async Task<bool> DeleteAsync(long id)
+    {
+        var employee = await _repository.GetByIdAsync(id);
+
+        if (employee == null)
+            return false;
+
+        await _repository.DeleteAsync(employee);
+
+        return true;
     }
 }
