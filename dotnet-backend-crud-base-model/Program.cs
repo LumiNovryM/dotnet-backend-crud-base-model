@@ -7,9 +7,7 @@ using dotnet_backend_crud_base_model.Services.Interfaces;
 using dotnet_backend_crud_base_model.Mappings;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -18,6 +16,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:3000",
+                "https://react-frontend-crud-base-model.vercel.app"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // Dependency Injection
 builder.Services.AddScoped<
@@ -35,9 +48,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 var app = builder.Build();
-
 
 // Seeder
 using (var scope = app.Services.CreateScope())
@@ -48,7 +59,6 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAsync(context);
 }
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -56,8 +66,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
+
+// CORS (WAJIB sebelum Authorization & MapControllers)
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
