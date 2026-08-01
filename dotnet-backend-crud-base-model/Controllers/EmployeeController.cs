@@ -95,4 +95,27 @@ public class EmployeeController : ControllerBase
             Data = employee
         });
     }
+
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        var result = await _employeeService.DeleteAsync(id);
+
+        if (!result)
+        {
+            return NotFound(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Employee not found.",
+                Data = null
+            });
+        }
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Employee deleted successfully.",
+            Data = null
+        });
+    }
 }
