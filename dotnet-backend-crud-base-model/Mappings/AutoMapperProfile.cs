@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using dotnet_backend_crud_base_model.DTOs.Department;
 using dotnet_backend_crud_base_model.DTOs.Employee;
+using dotnet_backend_crud_base_model.DTOs.JobTitle;
 using dotnet_backend_crud_base_model.Models.Entities;
 
 namespace dotnet_backend_crud_base_model.Mappings;
@@ -8,6 +10,10 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
+        CreateMap<Department, DepartmentResponseDto>();
+
+        CreateMap<JobTitle, JobTitleResponseDto>();
+
         CreateMap<EmployeeCreateDto, Employee>();
 
         CreateMap<EmployeeUpdateDto, Employee>();
