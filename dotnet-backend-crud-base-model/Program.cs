@@ -33,13 +33,14 @@ builder.Services.AddCors(options =>
 });
 
 // Dependency Injection
-builder.Services.AddScoped<
-    IEmployeeRepository,
-    EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-builder.Services.AddScoped<
-    IEmployeeService,
-    EmployeeService>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IJobTitleRepository, JobTitleRepository>();
+
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IJobTitleService, JobTitleService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
