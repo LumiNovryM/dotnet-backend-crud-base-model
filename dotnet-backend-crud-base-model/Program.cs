@@ -68,7 +68,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// CORS (WAJIB sebelum Authorization & MapControllers)
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
